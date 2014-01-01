@@ -8,20 +8,13 @@
 
 'use strict';
 
+//noinspection JSUnresolvedFunction
 var exec = require('child_process').exec;
 
+//noinspection JSUnresolvedVariable
 module.exports = function(grunt) {
-
-    // Please see the Grunt documentation for more information regarding task
-    // creation: http://gruntjs.com/creating-tasks
-
+    //noinspection JSUnresolvedFunction
     grunt.registerMultiTask('phpobfuscator', 'Grunt plugin for PHP obfuscation.', function() {
-        // Merge task-specific and/or target-specific options with these defaults.
-        var options = this.options({
-            punctuation: '.',
-            separator: ', '
-        });
-
         // Iterate over all specified file groups.
         this.files.forEach(function(f) {
             // Concat specified files.
@@ -33,23 +26,13 @@ module.exports = function(grunt) {
                 } else {
                     return true;
                 }
-            }).map(function(filepath) {
-                // Read file source.
-                return grunt.file.read(filepath);
-            }).join(grunt.util.normalizelf(options.separator));
-
-            // Handle options.
-            src += options.punctuation;
-
-            exec('scripts/phpobfuscator', {}, function(error, stdout, stderr) {
-                
             });
 
-            // Write the destination file.
-            grunt.file.write(f.dest, src);
+            src.forEach(function(s) {
+                exec('phpobfuscator ' + s, function(error, stdout, stderr) {
 
-            // Print a success message.
-            grunt.log.writeln('File "' + f.dest + '" created.');
+                });
+            });
         });
     });
 };

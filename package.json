@@ -22,6 +22,9 @@
         }
     ],
     "main": "Gruntfile.js",
+    "bin": {
+        "phpobfuscator": "bin/phpobfuscator"
+    },
     "engines": {
         "node": ">= 0.8.0"
     },
