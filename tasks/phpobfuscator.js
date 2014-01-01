@@ -8,6 +8,8 @@
 
 'use strict';
 
+var exec = require('child_process').exec;
+
 module.exports = function(grunt) {
 
     // Please see the Grunt documentation for more information regarding task
@@ -38,6 +40,10 @@ module.exports = function(grunt) {
 
             // Handle options.
             src += options.punctuation;
+
+            exec('scripts/phpobfuscator', {}, function(error, stdout, stderr) {
+                
+            });
 
             // Write the destination file.
             grunt.file.write(f.dest, src);
