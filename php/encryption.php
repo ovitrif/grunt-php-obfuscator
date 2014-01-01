@@ -22,7 +22,7 @@ class Encryption {
     public $vars = array();
 
     /**
-     * Chains of varibles
+     * Chains of variables
      * @example "class name" <=> "352=>array (370, 307)"
      * @var Array
      */
@@ -58,7 +58,7 @@ class Encryption {
      */
     public function __construct() {
         if ( empty ( $this->abc ) ) {
-            $this->abc = range( a, z );
+            $this->abc = range( 'a', 'z' );
         }
     }
 

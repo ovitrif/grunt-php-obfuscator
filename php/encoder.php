@@ -7,9 +7,7 @@ class Encoder {
         include_once( 'obfuscator2.php' );
     }
 
-    public function encode( $name, $path ) {
-        $file = '../' . $path . '/' . $name;
-
+    public function encode( $file ) {
         //First encoder
         $obfuscator = new PhpObfuscator();
         $obfuscatedFile = $obfuscator->obfuscate( $file );
@@ -25,18 +23,18 @@ class Encoder {
             $packer->strip_comments = false;
             $packer->b64 = true;
             $packer->pack();
-            $packer->save( "../" . $path . "/obfuscated_" . $name );
+            $packer->save( $file );
 
             //obfuscating variables
             $enc = new Encryption();
-            $enc->parse( "../" . $path . "/obfuscated_" . $name )->codeit( "../" . $path . "/obfuscated_" . $name );
+            $enc->parse( $file )->codeit( $file );
 
             //deleting files
             unlink( $obfuscatedFile );
-            unlink( $file );
+//            unlink( $file );
 
             //echo result
-            echo "obfuscated_" . $name;
+            echo $file;
         }
     }
 }

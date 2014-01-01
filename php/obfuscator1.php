@@ -29,7 +29,7 @@ class PhpObfuscator {
      * function to obfuscate a file
      *
      * @param string $fileName
-     * @return
+     * @return bool|string
      */
     public function obfuscate( $fileName ) {
         if ( trim( $fileName ) == "" ) {
