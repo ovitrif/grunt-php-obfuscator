@@ -20,6 +20,7 @@ module.exports = function(grunt) {
             // Concat specified files.
             var src = f.src.filter(function(filepath) {
                 // Warn on and remove invalid source files (if nonull was set).
+                //noinspection JSUnresolvedVariable,JSUnresolvedFunction
                 if (!grunt.file.exists(filepath)) {
                     grunt.log.warn('Source file "' + filepath + '" not found.');
                     return false;
@@ -29,7 +30,8 @@ module.exports = function(grunt) {
             });
 
             src.forEach(function(s) {
-                exec('phpobfuscator ' + s, function(error, stdout, stderr) {
+                //noinspection JSUnresolvedVariable
+                exec(__dirname + '/../bin/phpobfuscator ' + s, function(error, stdout, stderr) {
 
                 });
             });
