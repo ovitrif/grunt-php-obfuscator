@@ -1,6 +1,9 @@
 'use strict';
 
+//noinspection JSUnresolvedFunction
 var grunt = require('grunt');
+//noinspection JSUnresolvedFunction
+var exec = require('child_process').exec;
 
 /*
  ======== A Handy Little Nodeunit Reference ========
@@ -27,22 +30,43 @@ exports.phpobfuscator = {
         // setup here if necessary
         done();
     },
-    default_options: function(test) {
+    options: function(test) {
         test.expect(1);
 
-        var actual = grunt.file.read('tmp/default_options');
-        var expected = grunt.file.read('test/expected/default_options');
-        test.equal(actual, expected, 'should describe what the default behavior is.');
+        test.equal(undefined, grunt.config('options'));
 
         test.done();
     },
-    custom_options: function(test) {
+    obfuscation: function(test) {
         test.expect(1);
 
-        var actual = grunt.file.read('tmp/custom_options');
-        var expected = grunt.file.read('test/expected/custom_options');
-        test.equal(actual, expected, 'should describe what the custom option(s) behavior is.');
+        var file = 'test/fixtures/file.php';
+        var actual = grunt.file.read(file);
+        var expected = grunt.file.read('test/expected/options.php');
 
-        test.done();
+        var tmpFile = grunt.file.copy(file, 'tmp/file.php');
+
+        exec('../../bin/phpobfuscator ' + tmpFile, function(error, stdout, stderr) {
+            test.equal(actual, expected);
+            test.done();
+        });
     }
+//    default_options: function(test) {
+//        test.expect(1);
+//
+//        var actual = grunt.file.read('tmp/default_options');
+//        var expected = grunt.file.read('test/expected/default_options');
+//        test.equal(actual, expected, 'should describe what the default behavior is.');
+//
+//        test.done();
+//    },
+//    custom_options: function(test) {
+//        test.expect(1);
+//
+//        var actual = grunt.file.read('tmp/custom_options');
+//        var expected = grunt.file.read('test/expected/custom_options');
+//        test.equal(actual, expected, 'should describe what the custom option(s) behavior is.');
+//
+//        test.done();
+//    }
 };
