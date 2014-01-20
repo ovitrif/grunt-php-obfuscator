@@ -30,8 +30,8 @@ module.exports = function(grunt) {
 
         // Configuration to be run (and then tested).
         phpobfuscator: {
-            options: {
-
+            obfuscator: {
+                src: ['test/fixtures/*.php']
             }
         },
 
