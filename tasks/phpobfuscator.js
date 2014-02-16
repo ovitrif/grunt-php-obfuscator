@@ -23,7 +23,8 @@ module.exports = function(grunt) {
 
     var keyWords = ['self', 'this', '$self', '$this', 'private', 'public', 'static', 'class', 'function', '__construct'];
 
-    var regSComment = new RegExp('(\/\/|#).+', 'g');
+//    var regSComment = new RegExp('(\/\/)|(#(?=(?:[^\']|\'[^\']*\')*$)).+', 'g');
+    var regSComment = new RegExp('(\/\/)|([\\s*]#).+', 'g');
     var regMComment = new RegExp('(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)', 'g');
 
     var regClass = new RegExp('[\\s*]class[\\s\\n]+(\\S+)[\\s\n]*\\{', 'g');
@@ -60,17 +61,28 @@ module.exports = function(grunt) {
     }
 
     function obfuscate(file, content) {
+        // Preserve http://, files://, '//, "//
+        content = content.replace(/:\/\//g, 'tHiSiSnOtAcOmMeNt0');
+        content = content.replace(/'\/\//g, 'tHiSiSnOtAcOmMeNt1');
+        content = content.replace(/"\/\//g, 'tHiSiSnOtAcOmMeNt2');
+
         content = content.replace(regSComment, '');
         content = content.replace(regMComment, '');
 
 //        content = content.replace(new RegExp('\\s+', 'g'), ' ');
         content = content.replace('; ', ';');
 
+        // Restore http://, files://, '//, "//
+        content = content.replace(/tHiSiSnOtAcOmMeNt0/g, '://');
+        content = content.replace(/tHiSiSnOtAcOmMeNt1/g, '\'//');
+        content = content.replace(/tHiSiSnOtAcOmMeNt2/g, '\"//');
+
         content = util.obfuscate(_classes, content, hashids);
         content = util.obfuscate(_constants, content, hashids);
         content = util.obfuscate(_functions, content, hashids);
         content = util.obfuscate(_variables, content, hashids);
 
+        grunt.file.write('tmp/orig_' + file.replace(/^.*[\\\/]/, ''), grunt.file.read(file));
         grunt.file.write('tmp/' + file.replace(/^.*[\\\/]/, ''), content);
     }
 
