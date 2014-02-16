@@ -26,7 +26,7 @@ module.exports = function(grunt) {
     var regSComment = new RegExp('(\/\/|#).+', 'g');
     var regMComment = new RegExp('(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)', 'g');
 
-    var regClass = new RegExp('class[\\s\\n]+(\\S+)[\\s\n]*\\{', 'g');
+    var regClass = new RegExp('[\\s*]class[\\s\\n]+(\\S+)[\\s\n]*\\{', 'g');
     var regConstant = new RegExp('define\\(\\s*\'([a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)\'', 'g');
     var regFunction = new RegExp('function[\\s\n]+(\\S+)[\\s\n]*\\(', 'g');
     var regVariable = new RegExp('(\\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)', 'g');
@@ -36,10 +36,27 @@ module.exports = function(grunt) {
 
     //noinspection JSUnusedLocalSymbols
     function parse(file, content) {
-        _classes.push.apply(_classes, util.parse(regClass, content, keyWords));
-        _constants.push.apply(_constants, util.parse(regConstant, content, keyWords));
-        _functions.push.apply(_functions, util.parse(regFunction, content, keyWords));
-        _variables.push.apply(_variables, util.parse(regVariable, content, keyWords));
+        grunt.log.ok('Parsing: ' + file);
+
+        var __classes = util.parse(regClass, content, keyWords);
+        grunt.log.debug('Classes: ' + __classes);
+
+        _classes.push.apply(_classes, __classes);
+
+        var __constants = util.parse(regConstant, content, keyWords);
+        grunt.log.debug('Constants: ' + __constants);
+
+        _constants.push.apply(_constants, __constants);
+
+        var __functions = util.parse(regFunction, content, keyWords);
+        grunt.log.debug('Functions: ' + __functions);
+
+        _functions.push.apply(_functions, __functions);
+
+        var __variables = util.parse(regVariable, content, keyWords);
+        grunt.log.debug('Variables: ' + __variables);
+
+        _variables.push.apply(_variables, __variables);
     }
 
     function obfuscate(file, content) {

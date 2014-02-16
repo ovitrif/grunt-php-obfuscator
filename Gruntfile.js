@@ -54,5 +54,5 @@ module.exports = function(grunt) {
     grunt.registerTask('test', ['clean', 'phpobfuscator', 'nodeunit']);
 
     // By default, lint and run all tests.
-    grunt.registerTask('default', ['jshint', 'phpobfuscator']);
+    grunt.registerTask('default', ['jshint', 'test']);
 };
