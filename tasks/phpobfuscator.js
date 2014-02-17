@@ -23,7 +23,7 @@ module.exports = function(grunt) {
     var _variables = [];
 
 //    var regSComment = new RegExp('(\/\/)|(#(?=(?:[^\']|\'[^\']*\')*$)).+', 'g');
-    var regSComment = new RegExp('(\/\/)|([\\s*]#).+', 'g');
+    var regSComment = new RegExp('(\/\/|[\\s*]#).+', 'g');
     var regMComment = new RegExp('(?:/\\*(?:[^*]|(?:\\*+[^*/]))*\\*+/)|(?://.*)', 'g');
 
     var regClass = new RegExp('[\\s*]class[\\s\\n]+(\\S+)[\\s\n]*\\{', 'g');
