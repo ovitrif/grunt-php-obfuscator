@@ -11,17 +11,16 @@
 //noinspection JSUnresolvedVariable
 module.exports = function(grunt) {
     //noinspection JSUnresolvedFunction
+    var path = require('path');
+    //noinspection JSUnresolvedFunction
     var Hashids = require('hashids');
     //noinspection JSUnresolvedFunction
-    var Utility = require('../lib/util');
-    var util = new Utility();
+    var util = require('./lib/util')(grunt);
 
     var _classes = [];
     var _constants = [];
     var _functions = [];
     var _variables = [];
-
-    var keyWords = ['self', 'this', '$self', '$this', 'private', 'public', 'static', 'class', 'function', '__construct'];
 
 //    var regSComment = new RegExp('(\/\/)|(#(?=(?:[^\']|\'[^\']*\')*$)).+', 'g');
     var regSComment = new RegExp('(\/\/)|([\\s*]#).+', 'g');
@@ -32,65 +31,93 @@ module.exports = function(grunt) {
     var regFunction = new RegExp('function[\\s\n]+(\\S+)[\\s\n]*\\(', 'g');
     var regVariable = new RegExp('(\\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)', 'g');
 
-    var alphabet = util.range('a', 'z').concat(util.range('A', 'Z')).join('');
-    var hashids = new Hashids('this is my salt', 8, alphabet);
+    function obfuscate(file, content, hashids, options) {
+        if (options.comments) {
+            // Preserve http://, files://, '//, "//
+            content = content.replace(/:\/\//g, 'tHiSiSnOtAcOmMeNt0');
+            content = content.replace(/'\/\//g, 'tHiSiSnOtAcOmMeNt1');
+            content = content.replace(/"\/\//g, 'tHiSiSnOtAcOmMeNt2');
 
-    //noinspection JSUnusedLocalSymbols
-    function parse(file, content) {
-        grunt.log.ok('Parsing: ' + file);
+            content = content.replace(regSComment, '');
+            content = content.replace(regMComment, '');
 
-        var __classes = util.parse(regClass, content, keyWords);
-        grunt.log.debug('Classes: ' + __classes);
+            // Restore http://, files://, '//, "//
+            content = content.replace(/tHiSiSnOtAcOmMeNt0/g, '://');
+            content = content.replace(/tHiSiSnOtAcOmMeNt1/g, '\'//');
+            content = content.replace(/tHiSiSnOtAcOmMeNt2/g, '\"//');
+        }
 
-        _classes.push.apply(_classes, __classes);
+        if (options.minify) {
+            content = content.replace(new RegExp('\\s+', 'g'), ' ');
+            content = content.replace('; ', ';');
+        }
 
-        var __constants = util.parse(regConstant, content, keyWords);
-        grunt.log.debug('Constants: ' + __constants);
+        if (options.classes) {
+            content = util.obfuscate(_classes, content, hashids);
+        }
 
-        _constants.push.apply(_constants, __constants);
+        if (options.constants) {
+            content = util.obfuscate(_constants, content, hashids);
+        }
 
-        var __functions = util.parse(regFunction, content, keyWords);
-        grunt.log.debug('Functions: ' + __functions);
+        if (options.functions) {
+            content = util.obfuscate(_functions, content, hashids);
+        }
 
-        _functions.push.apply(_functions, __functions);
+        if (options.variables) {
+            content = util.obfuscate(_variables, content, hashids);
+        }
 
-        var __variables = util.parse(regVariable, content, keyWords);
-        grunt.log.debug('Variables: ' + __variables);
-
-        _variables.push.apply(_variables, __variables);
+        grunt.file.write(file.dest, content);
     }
 
-    function obfuscate(file, content) {
-        // Preserve http://, files://, '//, "//
-        content = content.replace(/:\/\//g, 'tHiSiSnOtAcOmMeNt0');
-        content = content.replace(/'\/\//g, 'tHiSiSnOtAcOmMeNt1');
-        content = content.replace(/"\/\//g, 'tHiSiSnOtAcOmMeNt2');
+    //noinspection JSUnusedLocalSymbols
+    function parse(file, content, keywords, options) {
+        grunt.log.ok('Parsing: ' + file.src);
 
-        content = content.replace(regSComment, '');
-        content = content.replace(regMComment, '');
+        if (options.classes) {
+            var __classes = util.parse(regClass, content, keywords);
+            grunt.log.debug('Classes: ' + __classes);
 
-//        content = content.replace(new RegExp('\\s+', 'g'), ' ');
-        content = content.replace('; ', ';');
+            _classes.push.apply(_classes, __classes);
+        }
 
-        // Restore http://, files://, '//, "//
-        content = content.replace(/tHiSiSnOtAcOmMeNt0/g, '://');
-        content = content.replace(/tHiSiSnOtAcOmMeNt1/g, '\'//');
-        content = content.replace(/tHiSiSnOtAcOmMeNt2/g, '\"//');
+        if (options.constants) {
+            var __constants = util.parse(regConstant, content, keywords);
+            grunt.log.debug('Constants: ' + __constants);
 
-        content = util.obfuscate(_classes, content, hashids);
-        content = util.obfuscate(_constants, content, hashids);
-        content = util.obfuscate(_functions, content, hashids);
-        content = util.obfuscate(_variables, content, hashids);
+            _constants.push.apply(_constants, __constants);
+        }
 
-        grunt.file.write('tmp/orig_' + file.replace(/^.*[\\\/]/, ''), grunt.file.read(file));
-        grunt.file.write('tmp/' + file.replace(/^.*[\\\/]/, ''), content);
+        if (options.functions) {
+            var __functions = util.parse(regFunction, content, keywords);
+            grunt.log.debug('Functions: ' + __functions);
+
+            _functions.push.apply(_functions, __functions);
+        }
+
+        if (options.variables) {
+            var __variables = util.parse(regVariable, content, keywords);
+            grunt.log.debug('Variables: ' + __variables);
+
+            _variables.push.apply(_variables, __variables);
+        }
     }
 
     grunt.registerMultiTask('phpobfuscator', 'Grunt plugin for PHP obfuscation.', function() {
+        var options = this.options();
+        var alphabet;
+
+        if (options.alphabet === true) {
+            alphabet = util.range('a', 'z').concat(util.range('A', 'Z')).join('');
+        }
+
+        var hashids = new Hashids(options.salt, options.length, alphabet ? alphabet : options.alphabet);
+
         // First parse content of files and find
         // classes/functions/variables to obfuscate.
-        util.handleFiles(this, parse);
+        util.handleFiles(this, parse, options.keywords, options.obfuscate);
         // Then obfuscate the found classes/functions/variables.
-        util.handleFiles(this, obfuscate);
+        util.handleFiles(this, obfuscate, hashids, options.obfuscate);
     });
 };

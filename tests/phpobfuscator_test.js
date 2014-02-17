@@ -40,9 +40,9 @@ exports.phpobfuscator = {
     obfuscation: function(test) {
         test.expect(1);
 
-        var file = 'test/fixtures/file.php';
+        var file = 'tests/fixtures/file.php';
         var actual = grunt.file.read(file);
-        var expected = grunt.file.read('test/expected/options.php');
+        var expected = grunt.file.read('tests/expected/options.php');
 
         var tmpFile = grunt.file.copy(file, 'tmp/file.php');
 
@@ -55,7 +55,7 @@ exports.phpobfuscator = {
 //        test.expect(1);
 //
 //        var actual = grunt.file.read('tmp/default_options');
-//        var expected = grunt.file.read('test/expected/default_options');
+//        var expected = grunt.file.read('tests/expected/default_options');
 //        test.equal(actual, expected, 'should describe what the default behavior is.');
 //
 //        test.done();
@@ -64,7 +64,7 @@ exports.phpobfuscator = {
 //        test.expect(1);
 //
 //        var actual = grunt.file.read('tmp/custom_options');
-//        var expected = grunt.file.read('test/expected/custom_options');
+//        var expected = grunt.file.read('tests/expected/custom_options');
 //        test.equal(actual, expected, 'should describe what the custom option(s) behavior is.');
 //
 //        test.done();
