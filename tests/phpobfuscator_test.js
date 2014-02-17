@@ -36,37 +36,5 @@ exports.phpobfuscator = {
         test.equal(undefined, grunt.config('options'));
 
         test.done();
-    },
-    obfuscation: function(test) {
-        test.expect(1);
-
-        var file = 'tests/fixtures/file.php';
-        var actual = grunt.file.read(file);
-        var expected = grunt.file.read('tests/expected/options.php');
-
-        var tmpFile = grunt.file.copy(file, 'tmp/file.php');
-
-        exec('../../bin/phpobfuscator ' + tmpFile, function(error, stdout, stderr) {
-            test.equal(actual, expected);
-            test.done();
-        });
     }
-//    default_options: function(test) {
-//        test.expect(1);
-//
-//        var actual = grunt.file.read('tmp/default_options');
-//        var expected = grunt.file.read('tests/expected/default_options');
-//        test.equal(actual, expected, 'should describe what the default behavior is.');
-//
-//        test.done();
-//    },
-//    custom_options: function(test) {
-//        test.expect(1);
-//
-//        var actual = grunt.file.read('tmp/custom_options');
-//        var expected = grunt.file.read('tests/expected/custom_options');
-//        test.equal(actual, expected, 'should describe what the custom option(s) behavior is.');
-//
-//        test.done();
-//    }
 };
