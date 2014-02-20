@@ -46,7 +46,7 @@ module.exports = function(grunt) {
     };
 
     Util.prototype.obfuscate = function(list, content, hashids) {
-        var regPrefix = '([^\/][\'|\\s])';
+        var regPrefix = '([^\/][\'|\\s|::])';
 
         list.forEach(function(i) {
             var regexp = new RegExp(regPrefix + i, 'g');
