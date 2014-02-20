@@ -3,7 +3,7 @@
 //noinspection JSUnresolvedFunction
 var grunt = require('grunt');
 //noinspection JSUnresolvedFunction
-var exec = require('child_process').exec;
+var util = require('../tasks/lib/util')(grunt);
 
 /*
  ======== A Handy Little Nodeunit Reference ========
@@ -35,6 +35,10 @@ exports.phpobfuscator = {
 
         test.equal(undefined, grunt.config('options'));
 
+        test.done();
+    },
+    define: function(test) {
+        test.expect(0);
         test.done();
     }
 };

@@ -1,8 +1,6 @@
 <?php
 
-phpinfo();
-
-class MyClass {
+class FirstClass {
     private $id = null;
 
     function __construct( $id ) {

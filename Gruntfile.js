@@ -35,7 +35,7 @@ module.exports = function(grunt) {
             },
             test: {
                 expand: true,
-                cwd: 'tests/',
+                cwd: 'tests/fixtures',
                 src: ['**/*.php'],
                 dest: 'tmp/'
             }
