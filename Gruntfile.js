@@ -31,27 +31,14 @@ module.exports = function(grunt) {
         // Configuration to be run (and then tested).
         phpobfuscator: {
             options: {
-                salt: 'this is my salt',
-                length: 8,
-                alphabet: true,
-                keywords: [
-                    'self', 'this', '$self', '$this', 'private', 'public', 'static', 'class', 'function', '__construct'
-                ],
-                obfuscate: {
-                    minify: true,
-                    classes: true,
-                    comments: true,
-                    constants: true,
-                    functions: true,
-                    variables: true
-                }
+                salt: 'this is my salt'
+            },
+            test: {
+                expand: true,
+                cwd: 'tests/',
+                src: ['**/*.php'],
+                dest: 'tmp/'
             }
-//            tests: {
-//                expand: true,
-//                cwd: 'tests/',
-//                src: ['**/*.php'],
-//                dest: 'tmp/'
-//            }
         },
 
         // Unit tests.

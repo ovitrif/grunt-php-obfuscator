@@ -32,6 +32,8 @@ module.exports = function(grunt) {
     var regVariable = new RegExp('(\\$[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*)', 'g');
 
     function obfuscate(file, content, hashids, options) {
+        grunt.log.ok('Obfuscating: ' + file.src);
+
         if (options.comments) {
             // Preserve http://, files://, '//, "//
             content = content.replace(/:\/\//g, 'tHiSiSnOtAcOmMeNt0');
@@ -45,27 +47,35 @@ module.exports = function(grunt) {
             content = content.replace(/tHiSiSnOtAcOmMeNt0/g, '://');
             content = content.replace(/tHiSiSnOtAcOmMeNt1/g, '\'//');
             content = content.replace(/tHiSiSnOtAcOmMeNt2/g, '\"//');
+
+            grunt.log.debug('✔ Comments');
         }
 
         if (options.minify) {
             content = content.replace(new RegExp('\\s+', 'g'), ' ');
             content = content.replace('; ', ';');
+
+            grunt.log.debug('✔ Minify');
         }
 
         if (options.classes) {
             content = util.obfuscate(_classes, content, hashids);
+            grunt.log.debug('✔ Classes: ' + _classes);
         }
 
         if (options.constants) {
             content = util.obfuscate(_constants, content, hashids);
+            grunt.log.debug('✔ Constants: ' + _constants);
         }
 
         if (options.functions) {
             content = util.obfuscate(_functions, content, hashids);
+            grunt.log.debug('✔ Functions: ' + _functions);
         }
 
         if (options.variables) {
             content = util.obfuscate(_variables, content, hashids);
+            grunt.log.debug('✔ Variables: ' + _variables);
         }
 
         grunt.file.write(file.dest, content);
@@ -77,39 +87,58 @@ module.exports = function(grunt) {
 
         if (options.classes) {
             var __classes = util.parse(regClass, content, keywords);
-            grunt.log.debug('Classes: ' + __classes);
+            grunt.log.debug('✔ Classes: ' + __classes);
 
             _classes.push.apply(_classes, __classes);
         }
 
         if (options.constants) {
             var __constants = util.parse(regConstant, content, keywords);
-            grunt.log.debug('Constants: ' + __constants);
+            grunt.log.debug('✔ Constants: ' + __constants);
 
             _constants.push.apply(_constants, __constants);
         }
 
         if (options.functions) {
             var __functions = util.parse(regFunction, content, keywords);
-            grunt.log.debug('Functions: ' + __functions);
+            grunt.log.debug('✔ Functions: ' + __functions);
 
             _functions.push.apply(_functions, __functions);
         }
 
         if (options.variables) {
             var __variables = util.parse(regVariable, content, keywords);
-            grunt.log.debug('Variables: ' + __variables);
+            grunt.log.debug('✔ Variables: ' + __variables);
 
             _variables.push.apply(_variables, __variables);
         }
     }
 
     grunt.registerMultiTask('phpobfuscator', 'Grunt plugin for PHP obfuscation.', function() {
-        var options = this.options();
+        var options = this.options({
+            length: 8,
+            alphabet: true,
+            keywords: [
+                'self', 'this', '$self', '$this', 'private', 'public', 'static', 'class', 'function', '__construct'
+            ],
+            obfuscate: {
+                minify: true,
+                classes: true,
+                comments: true,
+                constants: true,
+                functions: true,
+                variables: true
+            }
+        });
+
         var alphabet;
 
         if (options.alphabet === true) {
             alphabet = util.range('a', 'z').concat(util.range('A', 'Z')).join('');
+        }
+
+        if (!options.salt) {
+            grunt.fail.warn('Obfuscation salt must be defined!');
         }
 
         var hashids = new Hashids(options.salt, options.length, alphabet ? alphabet : options.alphabet);
