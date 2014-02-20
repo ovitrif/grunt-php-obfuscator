@@ -2,6 +2,9 @@
 
 > Grunt plugin for PHP obfuscation.
 
+[![Dependency Status](https://david-dm.org/designst/grunt-phpobfuscator.png?theme=shields.io)](https://david-dm.org/designst/grunt-phpobfuscator)
+[![devDependency Status](https://david-dm.org/designst/grunt-phpobfuscator/dev-status.png?theme=shields.io)](https://david-dm.org/designst/grunt-phpobfuscator#info=devDependencies)
+
 ## Getting Started
 This plugin requires Grunt `~0.4.2`
 
